@@ -1,0 +1,26 @@
+stages:
+  - checks
+
+precommit:
+  only:
+    - merge_request
+  stage: checks
+  trigger:
+    strategy: depend
+    include:
+      - file: terraform/precommit.yml
+        project: keypartner-cdo/terraform-registry/meta-pipelines
+        ref: main
+
+commitlint:
+  only:
+    - merge_request
+  stage: checks
+  variables:
+    FROM_BRANCH_NAME: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+  trigger:
+    strategy: depend
+    include:
+      - file: generic/commitlint.yml
+        project: keypartner-cdo/terraform-registry/meta-pipelines
+        ref: main
