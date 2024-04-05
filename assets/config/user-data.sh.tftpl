@@ -32,6 +32,10 @@ EOF
 # Master configuration
 #------------------------------------------------------------------------------#
 
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod +x get_helm.sh
+bash get_helm.sh
+
 cat <<EOF >/etc/rancher/rke2/config.yaml.d/server.yaml
 node-name: master
 cni:
@@ -39,7 +43,7 @@ cni:
 cluster-cidr: ${cidr}
 EOF
 
-curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.27.11+rke2r1 sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.28.8+rke2r1 sh -
 
 mkdir -p /var/lib/rancher/rke2/server/manifests
 
@@ -52,6 +56,14 @@ metadata:
 spec:
   valuesContent: |-
     kubeProxyReplacement: true
+    #hubble:
+    #  enabled: true
+    #  relay:
+    #    enabled: true
+    #  ui:
+    #    enabled: true
+    operator:
+      replicas: 1
 EOF
 
 systemctl start rke2-server && systemctl enable rke2-server
@@ -67,7 +79,7 @@ node-name: node-${worker_index}
 server: https://${master_public_ip}:9345
 EOF
 
-curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.27.11+rke2r1 INSTALL_RKE2_TYPE=agent sh -
+curl -sfL https://get.rke2.io | INSTALL_RKE2_VERSION=v1.28.8+rke2r1 INSTALL_RKE2_TYPE=agent sh -
 
 systemctl start rke2-agent && systemctl enable rke2-agent
 %{~ endif }

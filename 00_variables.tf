@@ -7,7 +7,7 @@ variable "region" {
 variable "bucket_prefix" {
   type        = string
   description = "Name of the bucket storing lab resources."
-  default     = "lab-k8s-"
+  default     = "lab-rke2-"
 }
 
 variable "cluster_sum" {
