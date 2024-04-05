@@ -35,32 +35,6 @@ resource "aws_security_group" "ingress_internal" {
   }
 }
 
-resource "aws_security_group" "ingress_k8s" {
-  name        = "${var.cluster_name}-ingress-k8s"
-  description = "Allow incoming Kubernetes API requests (TCP/6443) from outside the cluster"
-  vpc_id      = aws_vpc.this.id
-  tags        = local.tags
-  ingress {
-    protocol    = "tcp"
-    from_port   = 6443
-    to_port     = 6443
-    cidr_blocks = var.allowed_k8s_cidr_blocks
-  }
-}
-
-resource "aws_security_group" "ingress_rke2" {
-  name        = "${var.cluster_name}-ingress-k8s"
-  description = "Allow incoming RKE2 API requests (TCP/9345) from outside the cluster"
-  vpc_id      = aws_vpc.this.id
-  tags        = local.tags
-  ingress {
-    protocol    = "tcp"
-    from_port   = 9345
-    to_port     = 9345
-    cidr_blocks = var.allowed_k8s_cidr_blocks
-  }
-}
-
 resource "aws_security_group" "ingress_ssh" {
   name        = "${var.cluster_name}-ingress-ssh"
   description = "Allow incoming SSH traffic (TCP/22) from outside the cluster"
@@ -74,23 +48,15 @@ resource "aws_security_group" "ingress_ssh" {
   }
 }
 
-#resource "aws_security_group" "exercises_ingress" {
-#  name        = "${var.cluster_name}-exercises-ingress"
-#  description = "Allow incoming TCP traffic on ports behind which services for exercises should be configured"
-#  vpc_id      = aws_vpc.this.id
-#  tags        = local.tags
-#  ingress {
-#    description = "Used by Ingress Controller scanarios"
-#    protocol    = "tcp"
-#    from_port   = 30800
-#    to_port     = 30800
-#    cidr_blocks = var.allowed_ssh_cidr_blocks
-#  }
-#  ingress {
-#    description = "Used by NodePort scenarios"
-#    protocol    = "tcp"
-#    from_port   = 30007
-#    to_port     = 30007
-#    cidr_blocks = var.allowed_ssh_cidr_blocks
-#  }
-#}
+resource "aws_security_group" "ingress_https" {
+  name        = "${var.cluster_name}-ingress-https"
+  description = "Allow incoming HTTPS traffic (TCP/443) from outside the cluster"
+  vpc_id      = aws_vpc.this.id
+  tags        = local.tags
+  ingress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

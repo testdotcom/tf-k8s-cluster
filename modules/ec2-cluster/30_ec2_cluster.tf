@@ -26,10 +26,8 @@ resource "aws_instance" "master" {
   vpc_security_group_ids = [
     aws_security_group.egress.id,
     aws_security_group.ingress_internal.id,
-    aws_security_group.ingress_k8s.id,
-    aws_security_group.ingress_rke2.id,
     aws_security_group.ingress_ssh.id,
-    #aws_security_group.exercises_ingress.id
+    aws_security_group.ingress_https.id,
   ]
 
   # Saved in: /var/lib/cloud/instances/<instance-id>/user-data.txt
@@ -38,11 +36,11 @@ resource "aws_instance" "master" {
   user_data = templatefile(
     "./assets/config/user-data.sh.tftpl",
     {
-      node              = "master",
-      cidr              = var.pod_network_cidr_block
-      master_public_ip  = aws_eip.master.public_ip,
-      worker_index      = null,
-      token             = local.token
+      node             = "master",
+      cidr             = var.pod_network_cidr_block
+      master_public_ip = aws_eip.master.public_ip,
+      worker_index     = null,
+      token            = local.token
     }
   )
 
@@ -86,11 +84,11 @@ resource "aws_instance" "workers" {
   user_data = templatefile(
     "./assets/config/user-data.sh.tftpl",
     {
-      node              = "worker",
-      cidr              = null,
-      master_public_ip  = aws_eip.master.public_ip,
-      worker_index      = count.index,
-      token             = local.token
+      node             = "worker",
+      cidr             = null,
+      master_public_ip = aws_eip.master.public_ip,
+      worker_index     = count.index,
+      token            = local.token
     }
   )
 
