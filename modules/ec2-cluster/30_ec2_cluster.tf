@@ -33,16 +33,13 @@ resource "aws_instance" "master" {
   # Saved in: /var/lib/cloud/instances/<instance-id>/user-data.txt
   # Logs in:  /var/log/cloud-init-output.log
   # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#user-data-shell-scripts
-  user_data = templatefile(
-    "./assets/config/user-data.sh.tftpl",
-    {
-      node             = "master",
-      cidr             = var.pod_network_cidr_block
-      master_public_ip = aws_eip.master.public_ip,
-      worker_index     = null,
-      token            = local.token
-    }
-  )
+  user_data = templatefile("./assets/templates/user-data-master.yaml.tftpl", {
+    cidr             = var.pod_network_cidr_block
+    master_public_ip = aws_eip.master.public_ip,
+    token            = local.token
+    install_rke2     = local.install_rke2
+    install_helm     = local.install_helm
+  })
 
   tags = merge(local.tags, { "tf-rke2:node" = "master" })
 }
@@ -81,16 +78,13 @@ resource "aws_instance" "workers" {
     aws_security_group.ingress_ssh.id
   ]
 
-  user_data = templatefile(
-    "./assets/config/user-data.sh.tftpl",
-    {
-      node             = "worker",
-      cidr             = null,
-      master_public_ip = aws_eip.master.public_ip,
-      worker_index     = count.index,
-      token            = local.token
-    }
-  )
+  user_data = templatefile("./assets/templates/user-data-worker.yaml.tftpl", {
+    master_public_ip = aws_eip.master.public_ip,
+    worker_index     = count.index,
+    token            = local.token
+    install_rke2     = local.install_rke2
+    install_helm     = local.install_helm
+  })
 
   tags = merge(local.tags, { "tf-rke2:node" = "worker-${count.index}" })
 }

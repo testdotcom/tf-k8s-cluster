@@ -1,0 +1,59 @@
+#cloud-config
+write_files:
+- path: "/etc/modules-load.d/90-rke2.conf"
+  content: |
+    overlay
+    br_netfilter
+- path: /etc/sysctl.d/90-rke2.conf
+  content: |
+    net.ipv4.conf.all.forwarding=1
+    net.ipv6.conf.all.forwarding=1
+- path: /etc/rancher/rke2/config.yaml.d
+  content: |
+    write-kubeconfig-mode: "0644"
+    token: ${token}
+- path: /etc/rancher/rke2/config.yaml.d/server.yaml
+  content: |
+    node-name: master
+    cni:
+    - cilium
+    cluster-cidr: ${cidr}
+- path: /var/lib/rancher/rke2/server/manifests
+  content: |
+    apiVersion: helm.cattle.io/v1
+    kind: HelmChartConfig
+    metadata:
+      name: rke2-cilium
+      namespace: kube-system
+    spec:
+      valuesContent: |-
+        kubeProxyReplacement: true
+        operator:
+          replicas: 1
+- path: /home/ec2-user/.bash_profile
+  content: |
+    export PATH="$PATH:/var/lib/rancher/rke2/bin"
+    export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+    source <(kubectl completion bash)
+    alias k=kubectl
+    complete -o default -F __start_kubectl k
+- path: /tmp/install-rke2.sh
+  permissions: '0744'
+  content: |
+    ${install_rke2}
+- path: /tmp/install-helm.sh
+  permissions: '0744'
+  content: |
+    ${install_helm}
+
+bootcmd:
+  - modprobe overlay
+  - modprobe br_netfilter
+
+  - zypper refresh && zypper in -yt pattern apparmor
+  - systemctl start apparmor && systemctl enable apparmor
+
+  - INSTALL_RKE2_VERSION=v1.32.3+rke2r1 /tmp/install-rke2.sh
+  - systemctl enable --now rke2-agent
+
+  - /tmp/install-helm.sh
