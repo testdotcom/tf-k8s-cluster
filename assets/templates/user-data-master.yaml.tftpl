@@ -53,7 +53,7 @@ bootcmd:
   - zypper refresh && zypper in -yt pattern apparmor
   - systemctl start apparmor && systemctl enable apparmor
 
-  - INSTALL_RKE2_VERSION=v1.32.3+rke2r1 /tmp/install-rke2.sh
+  - INSTALL_RKE2_VERSION=${rke2_version} /tmp/install-rke2.sh
   - systemctl enable --now rke2-agent
 
   - /tmp/install-helm.sh

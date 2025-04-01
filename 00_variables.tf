@@ -69,3 +69,8 @@ variable "pod_network_cidr_block" {
   description = "CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the \".spec.podCIDR\" field of the node objects). Defaults to Flannel network CIDR."
   default     = "10.244.0.0/16"
 }
+
+variable "rke2_version" {
+  type = string
+  description = "Pin the RKE2 version."
+}

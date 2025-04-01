@@ -38,6 +38,7 @@ resource "aws_instance" "master" {
     master_public_ip = aws_eip.master.public_ip,
     token            = local.token
     install_rke2     = local.install_rke2
+    rke2_version     = var.rke2_version
     install_helm     = local.install_helm
   })
 
@@ -83,6 +84,7 @@ resource "aws_instance" "workers" {
     worker_index     = count.index,
     token            = local.token
     install_rke2     = local.install_rke2
+    rke2_version     = var.rke2_version
     install_helm     = local.install_helm
   })
 

@@ -52,3 +52,8 @@ variable "pod_network_cidr_block" {
   type        = string
   description = "CIDR block for the Pod network of the cluster."
 }
+
+variable "rke2_version" {
+  type = string
+  description = "Pin the RKE2 version."
+}

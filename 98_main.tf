@@ -34,6 +34,7 @@ module "cluster" {
   source = "./modules/ec2-cluster"
 
   cluster_name = random_pet.cluster_name[count.index].id
+  rke2_version = var.rke2_version
 
   master_instance_type = var.master_instance_type
   worker_instance_type = var.worker_instance_type
