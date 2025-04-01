@@ -66,6 +66,6 @@ variable "allowed_k8s_cidr_blocks" {
 
 variable "pod_network_cidr_block" {
   type        = string
-  description = "**This is an optional variable with a default value of null**. CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the \".spec.podCIDR\" field of the node objects). Defaults to Flannel network CIDR."
+  description = "CIDR block for the Pod network of the cluster. If set, Kubernetes automatically allocates Pod subnet IP address ranges to the nodes (i.e. sets the \".spec.podCIDR\" field of the node objects). Defaults to Flannel network CIDR."
   default     = "10.244.0.0/16"
 }
