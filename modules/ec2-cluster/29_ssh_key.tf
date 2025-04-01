@@ -1,5 +1,4 @@
 resource "tls_private_key" "ssh" {
-  #algorithm = "ED25519"
   algorithm = "RSA"
   rsa_bits  = "4096"
 }
